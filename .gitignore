@@ -1,0 +1,23 @@
+# environment
+.venv/
+__pycache__/
+*.pyc
+
+# datasets and large OSM data
+*.csv
+road_graph.graphml
+cache/
+
+# generated artifacts (rebuilt by run_pipeline.py)
+*.parquet
+forecast_eval.json
+metrics_full.json
+causal_impact.json
+cost_benefit.json
+
+# misc
+.streamlit/
+*.log
+
+# internal planning notes (not for the public repo)
+DECK_OUTLINE.md
