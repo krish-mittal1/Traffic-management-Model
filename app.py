@@ -4,15 +4,17 @@ Run: streamlit run app.py"""
 import json
 import pathlib
 
-import folium
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import streamlit as st
-from folium.plugins import HeatMap
-from streamlit_folium import st_folium
+import streamlit.components.v1 as components
 
-MAP_STYLE = "open-street-map"   # detailed streets/landmarks → real feel when zooming in
+# MapmyIndia (Mappls) Web SDK key — partner mapping tech for Gridlock 2.0.
+# Static map keys are client-side by design; lock it to your domains in the Mappls console.
+try:
+    MAPPLS_KEY = st.secrets["MAPPLS_KEY"]
+except Exception:
+    MAPPLS_KEY = "7748ecab0e753c215194a09e01debb77"
 
 HERE = pathlib.Path(__file__).parent
 st.set_page_config(page_title="Parking Congestion Intelligence", layout="wide", page_icon="🅿️")
@@ -31,11 +33,68 @@ def load():
 (df, zones, playbook, forecast, ev, route, causal, es, emerging, cb, curve) = load()
 
 
-def map_layout(fig, zoom=10.5, height=480, center=(12.97, 77.59)):
-    fig.update_layout(mapbox_style=MAP_STYLE, mapbox_zoom=zoom,
-                      mapbox_center=dict(lat=center[0], lon=center[1]),
-                      height=height, margin=dict(l=0, r=0, t=0, b=0))
-    return fig
+def mappls_map(markers, route=None, center=(12.97, 77.59), zoom=11, height=500, dom="map"):
+    """Interactive MapmyIndia (Mappls) map: hover a pin for a quick tooltip, click it for full details."""
+    for m in markers:
+        m["tip"] = str(m.get("tip", "")).replace('"', "'")
+    html = """
+<style>
+  #__DOM___tip{position:fixed;z-index:99999;pointer-events:none;display:none;
+    background:rgba(17,17,17,.93);color:#fff;font:12px/1.4 system-ui,sans-serif;
+    padding:6px 10px;border-radius:6px;max-width:260px;box-shadow:0 3px 10px rgba(0,0,0,.45)}
+  .pin{cursor:pointer;transition:transform .08s}
+  .pin:hover{transform:scale(1.18)}
+</style>
+<div id="__DOM__" style="width:100%;height:__Hpx__;border-radius:8px;overflow:hidden"></div>
+<div id="__DOM___tip"></div>
+<script>
+var TIP=null;
+function tipEl(){ if(!TIP){TIP=document.getElementById('__DOM___tip');} return TIP; }
+function showTip(el,e){ var t=tipEl(); t.innerHTML=el.getAttribute('data-tip'); t.style.display='block'; moveTip(e); }
+function moveTip(e){ var t=tipEl(); t.style.left=(e.clientX+14)+'px'; t.style.top=(e.clientY+14)+'px'; }
+function hideTip(){ tipEl().style.display='none'; }
+function draw(map){
+  var pts = __PTS__;
+  pts.forEach(function(p){
+    var el = '<div class="pin" data-tip="'+p.tip+'" onmouseenter="showTip(this,event)" '
+           + 'onmousemove="moveTip(event)" onmouseleave="hideTip()" '
+           + 'style="display:flex;align-items:center;justify-content:center;width:'+p.size+'px;'
+           + 'height:'+p.size+'px;background:'+p.color+';border:1.5px solid #fff;border-radius:50%;'
+           + 'color:#fff;font:bold 11px sans-serif;box-shadow:0 0 4px rgba(0,0,0,.45)">'+(p.label||'')+'</div>';
+    new mappls.Marker({map:map, position:{lat:p.lat,lng:p.lng}, html:el,
+                       popupHtml:p.popup, popupOptions:{maxWidth:300}});
+  });
+  var rt = __LINE__;
+  if (rt.length > 1) {
+    new mappls.Polyline({map:map, path:rt, strokeColor:'#185fa5', strokeWidth:4, strokeOpacity:0.85});
+  }
+}
+function start(){
+  var map = new mappls.Map('__DOM__', {center:{lat:__LAT__,lng:__LNG__}, zoom:__ZOOM__});
+  if (map.on) { map.on('load', function(){draw(map);}); }
+  else if (map.addListener) { map.addListener('load', function(){draw(map);}); }
+  else { setTimeout(function(){draw(map);}, 1200); }
+}
+</script>
+<script src="https://apis.mappls.com/advancedmaps/api/__KEY__/map_sdk?v=3.0&layer=vector" onload="start()"></script>
+"""
+    html = (html.replace("__DOM__", dom).replace("__Hpx__", f"{height}px")
+                .replace("__PTS__", json.dumps(markers)).replace("__LINE__", json.dumps(route or []))
+                .replace("__LAT__", str(center[0])).replace("__LNG__", str(center[1]))
+                .replace("__ZOOM__", str(zoom)).replace("__KEY__", MAPPLS_KEY))
+    components.html(html, height=height + 12)
+
+
+def popup_card(title, rows, lat=None, lon=None):
+    """Build a styled HTML popup: bold title, key/value rows, optional Google Maps link."""
+    body = "".join(f"<tr><td style='color:#888;padding-right:8px'>{k}</td>"
+                   f"<td style='text-align:right'><b>{v}</b></td></tr>" for k, v in rows)
+    link = ("" if lat is None else
+            f"<a href='https://www.google.com/maps/search/?api=1&query={lat},{lon}' "
+            f"target='_blank' style='display:block;margin-top:6px;color:#185fa5'>📍 Open in Google Maps</a>")
+    return (f"<div style='font:13px system-ui,sans-serif;min-width:190px'><b>{title}</b>"
+            f"<hr style='margin:5px 0;border:none;border-top:1px solid #ddd'>"
+            f"<table style='width:100%'>{body}</table>{link}</div>")
 
 
 st.title("🅿️ Parking Congestion Intelligence — Bengaluru")
@@ -89,7 +148,8 @@ with tabs[0]:
     m2.metric("Emerging-zone skill", f"{ev['emerging_spearman_ml']:.2f}", f"vs {ev['emerging_spearman_naive']:.2f} naive")
     m3.metric("Patrol route saved", f"{100*(cb['route_km_naive']-cb['route_km_optimized'])/cb['route_km_naive']:.0f}%")
     m4.metric("Officer-hrs saved/wk", f"~{cb['officer_hours_saved_per_week']:.0f}")
-    st.caption("Built entirely on the provided dataset + free OpenStreetMap data — no paid APIs, fully reproducible.")
+    st.caption("Built on the provided BTP dataset + OpenStreetMap road network, visualised on MapmyIndia (Mappls) "
+               "interactive maps — partner technology, free tier, fully reproducible.")
     with st.expander("📖 Plain-English glossary (what every term means)"):
         st.markdown(
             "- **PICS** — *Parking-Induced Congestion Score* (0–100). How badly a spot chokes traffic. "
@@ -103,24 +163,25 @@ with tabs[0]:
 
 # Tab: hotspots & PICS
 with tabs[1]:
-    st.subheader("Heatmap + PICS-ranked hotspots")
-    st.caption("🖱️ **Click a dot on the map** (turn off Brave Shields for localhost if the map is blank) "
-               "**or** click a row in the table → details appear below.")
+    st.subheader("PICS-ranked parking hotspots")
+    st.caption("🗺️ Interactive **MapmyIndia** map — pin colour = severity (red ≥75, amber ≥50, green below). "
+               "Click a pin for a quick popup, or click a table row for the full detail card.")
     top = zones.head(top_n).reset_index(drop=True)
     left, right = st.columns([3, 2])
     with left:
-        pts = f[["latitude", "longitude"]].dropna()
-        if len(pts) > 6000:
-            pts = pts.sample(6000, random_state=0)
-        fm = folium.Map(location=[12.97, 77.59], zoom_start=11, tiles="OpenStreetMap")
-        HeatMap(pts.values.tolist(), radius=9, blur=12, min_opacity=0.3).add_to(fm)
-        for _, r in top.iterrows():
-            col = "#d7191c" if r.pics >= 75 else "#fdae61" if r.pics >= 50 else "#1a9641"
-            folium.CircleMarker(
-                [r.lat, r.lon], radius=4 + r.pics / 16, color=col, fill=True, fill_opacity=0.75, weight=1,
-                tooltip=f"#{int(r['rank'])} · {r.top_location} · PICS {r.pics} (click)").add_to(fm)
-        mstate = st_folium(fm, height=500, use_container_width=True,
-                           returned_objects=["last_object_clicked"], key="hotfol")
+        pc = lambda p: "#d7191c" if p >= 75 else "#fdae61" if p >= 50 else "#1a9641"
+        mk = [{
+            "lat": float(r.lat), "lng": float(r.lon), "size": int(9 + r.pics / 5),
+            "color": pc(r.pics), "label": "",
+            "tip": f"#{int(r['rank'])} · {r.top_location} — PICS {r.pics}",
+            "popup": popup_card(f"#{int(r['rank'])} · {r.top_location}", [
+                ("PICS", r.pics), ("Violations (5mo)", f"{int(r.violations):,}"),
+                ("Road", r.road_class), ("To junction", f"{int(r.junction_dist_m)} m"),
+                ("Peak hour", f"{int(r.peak_hour)}:00"), ("Station", r.top_station),
+                ("Top violation", r.top_violation), ("Driver", r.context),
+            ], lat=float(r.lat), lon=float(r.lon)),
+        } for _, r in top.iterrows()]
+        mappls_map(mk, height=500, dom="hotmap")
     with right:
         st.markdown("**Top zones — click a row**")
         show = zones.head(25)[["rank", "pics", "violations", "top_location", "road_class", "context"]].rename(
@@ -128,19 +189,13 @@ with tabs[1]:
         tbl = st.dataframe(show, hide_index=True, use_container_width=True, height=470,
                            on_select="rerun", selection_mode="single-row", key="ztable")
 
-    # detail card (full width) — driven by a MAP-DOT click or a TABLE-ROW click
     chosen_rank = None
-    clicked = (mstate or {}).get("last_object_clicked")
-    if clicked and clicked.get("lat") is not None:
-        d2 = (top["lat"] - clicked["lat"]) ** 2 + (top["lon"] - clicked["lng"]) ** 2
-        chosen_rank = int(top.loc[d2.idxmin(), "rank"])
-    if chosen_rank is None:
-        try:
-            rows = tbl.selection.rows
-            if rows:
-                chosen_rank = int(show.iloc[rows[0]]["rank"])
-        except (AttributeError, KeyError, IndexError):
-            pass
+    try:
+        rows = tbl.selection.rows
+        if rows:
+            chosen_rank = int(show.iloc[rows[0]]["rank"])
+    except (AttributeError, KeyError, IndexError):
+        pass
 
     if chosen_rank is not None:
         z = zones[zones["rank"] == chosen_rank].iloc[0]
@@ -166,19 +221,21 @@ with tabs[2]:
     d.metric("Emerging skill", f"{ev['emerging_spearman_ml']:.2f}", f"vs {ev['emerging_spearman_naive']:.2f} naive")
     st.caption("The model beats pure persistence — most decisively on EMERGING hotspots (zones rising before they peak), "
                "which a 'just-look-at-history' baseline misses.")
-    fz = forecast.head(120)
+    fz = forecast.head(120).merge(
+        zones[["h3", "top_location", "top_station", "road_class", "context"]], on="h3", how="left")
+    fz["top_location"] = fz["top_location"].fillna("Zone")
     fmax = forecast["pred_next7"].max()
-    fig = go.Figure(go.Scattermapbox(
-        lat=fz.lat, lon=fz.lon, mode="markers",
-        marker=dict(size=(6 + 18 * fz.pred_next7 / fmax), color=fz.pred_next7,
-                    colorscale="Plasma", showscale=True, opacity=0.82,
-                    colorbar=dict(title="pred 7d", x=1.0)),
-        text=[f"predicted {v:.0f} violations (next 7 days)" for v in fz.pred_next7],
-        hoverinfo="text"))
-    fig.update_layout(mapbox_style=MAP_STYLE, mapbox_zoom=10.5,
-                      mapbox_center=dict(lat=12.97, lon=77.59),
-                      height=460, margin=dict(l=0, r=0, t=0, b=0))
-    st.plotly_chart(fig, use_container_width=True)
+    fcol = lambda v: "#7a0177" if v / fmax >= 0.66 else "#d7191c" if v / fmax >= 0.33 else "#fdae61"
+    mk = [{
+        "lat": float(r.lat), "lng": float(r.lon), "size": int(8 + 20 * r.pred_next7 / fmax),
+        "color": fcol(r.pred_next7), "label": "",
+        "tip": f"{r.top_location} — predicted {r.pred_next7:.0f} (next 7d)",
+        "popup": popup_card(r.top_location, [
+            ("Predicted (next 7d)", f"{r.pred_next7:.0f}"), ("Station", r.top_station),
+            ("Road", r.road_class), ("Driver", r.context),
+        ], lat=float(r.lat), lon=float(r.lon)),
+    } for _, r in fz.iterrows()]
+    mappls_map(mk, height=460, zoom=10.5, dom="fcmap")
     st.markdown("##### 🔺 Fastest-rising (emerging) zones — catch these before they peak")
     em = emerging.head(12)[["top_location", "top_station", "recent_daily", "pred_daily", "momentum_pct"]].rename(
         columns={"top_location": "location", "recent_daily": "now/day", "pred_daily": "forecast/day",
@@ -197,17 +254,19 @@ with tabs[3]:
     c.metric("Est. shift", f"~{opt/18*60 + 15*len(route):.0f} min")
     left, right = st.columns([3, 2])
     with left:
-        fig = go.Figure()
-        fig.add_scattermapbox(lat=route.lat, lon=route.lon, mode="lines",
-                              line=dict(width=3, color="#185fa5"), hoverinfo="skip")
-        fig.add_scattermapbox(
-            lat=route.lat, lon=route.lon, mode="markers+text",
-            marker=dict(size=22, color="#185fa5"),
-            text=[str(int(s)) for s in route.stop], textfont=dict(color="white", size=11),
-            hovertext=[f"Stop {int(s.stop)}: {s.top_location} · PICS {s.pics}" for _, s in route.iterrows()],
-            hoverinfo="text")
-        st.plotly_chart(map_layout(fig, zoom=11, height=480,
-                        center=(route.lat.mean(), route.lon.mean())), use_container_width=True)
+        mk = [{
+            "lat": float(r.lat), "lng": float(r.lon), "size": 26, "color": "#185fa5",
+            "label": str(int(r.stop)),
+            "tip": f"Stop {int(r.stop)}: {r.top_location}",
+            "popup": popup_card(f"Stop {int(r.stop)}: {r.top_location}", [
+                ("PICS", r.pics), ("Station", r.top_station), ("Road", r.road_class),
+                ("Peak hour", f"{int(r.peak_hour)}:00"), ("Leg", f"{r.leg_km:.1f} km"),
+                ("Cumulative", f"{r.cum_km:.1f} km"),
+            ], lat=float(r.lat), lon=float(r.lon)),
+        } for _, r in route.iterrows()]
+        line = [{"lat": float(r.lat), "lng": float(r.lon)} for _, r in route.iterrows()]
+        mappls_map(mk, route=line, height=480, zoom=11,
+                   center=(route.lat.mean(), route.lon.mean()), dom="ptmap")
     with right:
         st.dataframe(route[["stop", "pics", "top_location", "leg_km", "cum_km"]].rename(
             columns={"top_location": "location"}), hide_index=True, use_container_width=True, height=480)

@@ -3,17 +3,22 @@
 __pycache__/
 *.pyc
 
-# datasets and large OSM data
+# datasets and large OSM data (never commit)
 *.csv
 road_graph.graphml
 cache/
 
-# generated artifacts (rebuilt by run_pipeline.py)
+# generated artifacts: ignore all, then keep only what the dashboard loads at runtime
 *.parquet
-forecast_eval.json
+!violations_clean.parquet
+!zones_h3.parquet
+!playbook.parquet
+!forecast_zones.parquet
+!patrol_route.parquet
+!emerging.parquet
+!coverage_curve.parquet
+!causal_eventstudy.parquet
 metrics_full.json
-causal_impact.json
-cost_benefit.json
 
 # misc
 .streamlit/

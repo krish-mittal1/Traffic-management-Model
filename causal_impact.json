@@ -1,0 +1,15 @@
+{
+  "design": "comparative interrupted time-series (difference-in-differences) + persistence",
+  "n_treated_zones": 218,
+  "n_control_zones": 215,
+  "pre_weeks": 10,
+  "post_weeks": 11,
+  "treated_change_per_week": -9.09,
+  "control_change_per_week": -0.97,
+  "did_estimate": -8.11,
+  "welch_t": -4.09,
+  "hotspot_rank_persistence_spearman": 0.677,
+  "top20_retention": 0.8,
+  "headline": "Hotspots persist: pre/post rank correlation 0.68, 80% of the worst-20 zones stay worst-20 across halves. Enforcement is not dispersing them -> targeted, predictive enforcement is needed.",
+  "did_caveat": "The DiD (-8.11, t=-4.09) shows treated hotspots fell faster than controls, BUT treatment is defined by pre-period extremity, so this is partly REGRESSION TO THE MEAN, not proven deterrence. Cleanly separating the two needs the enforcement-action field, which is 100% empty in this dataset. We therefore lead with the persistence finding (confound-free) and report the DiD as suggestive only."
+}

@@ -1,0 +1,12 @@
+{
+  "total_violations": 248231,
+  "n_zones": 2410,
+  "zones_to_cover_50pct": 68,
+  "zones_to_cover_50pct_share": 2.8,
+  "top_50_zones_cover_pct": 44.3,
+  "top_1pct_zones_cover_pct": 32.5,
+  "route_km_optimized": 34.4,
+  "route_km_naive": 84.0,
+  "officer_hours_saved_per_week": 19.3,
+  "headline": "Just 68 zones (2.8% of all zones) account for HALF of every violation; the top 50 cover 44%. Targeting them with optimized routes frees ~19 officer-hours/week vs untargeted patrols."
+}

@@ -1,0 +1,13 @@
+{
+  "test_window_days": 21,
+  "test_rows": 16569,
+  "model_mae_per_zone_day": 2.245,
+  "baseline_roll7_mae": 2.214,
+  "rank_spearman": 0.874,
+  "precision_at_20": 0.95,
+  "precision_at_50": 0.88,
+  "baseline_precision_at_20": 0.8,
+  "baseline_precision_at_50": 0.66,
+  "emerging_spearman_ml": 0.672,
+  "emerging_spearman_naive": 0.303
+}
