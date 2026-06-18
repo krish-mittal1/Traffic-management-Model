@@ -1,0 +1,17 @@
+# systemd unit for running the dashboard without Docker.
+# Copy to /etc/systemd/system/parking.service, then:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now parking
+# Adjust User and the two paths if your username or clone location differ.
+[Unit]
+Description=Parking Congestion Intelligence dashboard
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/Traffic-management-Model
+ExecStart=/home/ubuntu/Traffic-management-Model/.venv/bin/streamlit run app.py --server.port 8501 --server.address 127.0.0.1 --server.headless true
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

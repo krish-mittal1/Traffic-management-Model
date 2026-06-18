@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    container_name: parking-dashboard
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    # Optional: keep the MapMyIndia key out of the image.
+    # Create .streamlit/secrets.toml on the host with: MAPPLS_KEY = "..."
+    volumes:
+      - ./.streamlit:/app/.streamlit:ro

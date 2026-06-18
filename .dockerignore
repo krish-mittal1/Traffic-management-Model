@@ -1,0 +1,10 @@
+.venv/
+.git/
+__pycache__/
+*.pyc
+*.csv
+road_graph.graphml
+cache/
+.streamlit/secrets.toml
+*.log
+streamlit_boot.log
