@@ -97,6 +97,22 @@ def popup_card(title, rows, lat=None, lon=None):
             f"<table style='width:100%'>{body}</table>{link}</div>")
 
 
+def congestion_tier(pics):
+    """Map the PICS score to a discrete congestion class (matches map pin colours)."""
+    return "🔴 Critical" if pics >= 75 else "🟠 High" if pics >= 50 else "🟢 Moderate"
+
+
+def legend(items):
+    """Small inline colour legend, e.g. legend([('Critical (≥75)', '#d7191c'), ...])."""
+    chips = "".join(
+        f"<span style='margin-right:16px;white-space:nowrap'>"
+        f"<span style='display:inline-block;width:11px;height:11px;border-radius:50%;"
+        f"background:{c};margin-right:5px;vertical-align:middle'></span>{lbl}</span>"
+        for lbl, c in items)
+    st.markdown(f"<div style='font:12px system-ui,sans-serif;color:#888;padding:2px 0 8px'>{chips}</div>",
+                unsafe_allow_html=True)
+
+
 st.title("🅿️ Parking Congestion Intelligence — Bengaluru")
 st.caption(
     "Gridlock 2.0 · Flipkart × Bengaluru Traffic Police · "
@@ -144,7 +160,8 @@ with tabs[0]:
         "`clean → H3 hotspots → PICS (road+junction) → POI context → forecast & emerging → "
         "playbook → patrol-route TSP → ROI → impact study`")
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Forecast ROC-AUC", "0.998")
+    m1.metric("Backtested precision@20", f"{ev.get('cv_precision_at_20_mean', ev['precision_at_20']):.0%}",
+              f"{ev.get('backtest_folds', 1)} rolling windows")
     m2.metric("Emerging-zone skill", f"{ev['emerging_spearman_ml']:.2f}", f"vs {ev['emerging_spearman_naive']:.2f} naive")
     m3.metric("Patrol route saved", f"{100*(cb['route_km_naive']-cb['route_km_optimized'])/cb['route_km_naive']:.0f}%")
     m4.metric("Officer-hrs saved/wk", f"~{cb['officer_hours_saved_per_week']:.0f}")
@@ -182,9 +199,12 @@ with tabs[1]:
             ], lat=float(r.lat), lon=float(r.lon)),
         } for _, r in top.iterrows()]
         mappls_map(mk, height=500, dom="hotmap")
+        legend([("Critical (PICS ≥75)", "#d7191c"), ("High (50–74)", "#fdae61"), ("Moderate (<50)", "#1a9641")])
     with right:
         st.markdown("**Top zones — click a row**")
-        show = zones.head(25)[["rank", "pics", "violations", "top_location", "road_class", "context"]].rename(
+        hz = zones.head(25).copy()
+        hz["tier"] = hz["pics"].apply(congestion_tier)
+        show = hz[["rank", "pics", "tier", "violations", "top_location", "road_class", "context"]].rename(
             columns={"top_location": "location", "road_class": "road"})
         tbl = st.dataframe(show, hide_index=True, use_container_width=True, height=470,
                            on_select="rerun", selection_mode="single-row", key="ztable")
@@ -221,6 +241,10 @@ with tabs[2]:
     d.metric("Emerging skill", f"{ev['emerging_spearman_ml']:.2f}", f"vs {ev['emerging_spearman_naive']:.2f} naive")
     st.caption("The model beats pure persistence — most decisively on EMERGING hotspots (zones rising before they peak), "
                "which a 'just-look-at-history' baseline misses.")
+    if "cv_precision_at_20_mean" in ev:
+        st.info(f"✅ **Validated, not lucky:** across {ev['backtest_folds']} rolling-origin backtest windows the model "
+                f"holds **{ev['cv_precision_at_20_mean']:.0%} precision@20** and **{ev['cv_rank_spearman_mean']:.2f}** "
+                f"rank-Spearman — the 95% above is a single window, this is the average over several.")
     fz = forecast.head(120).merge(
         zones[["h3", "top_location", "top_station", "road_class", "context"]], on="h3", how="left")
     fz["top_location"] = fz["top_location"].fillna("Zone")
@@ -236,6 +260,7 @@ with tabs[2]:
         ], lat=float(r.lat), lon=float(r.lon)),
     } for _, r in fz.iterrows()]
     mappls_map(mk, height=460, zoom=10.5, dom="fcmap")
+    legend([("Highest predicted", "#7a0177"), ("High", "#d7191c"), ("Lower", "#fdae61")])
     st.markdown("##### 🔺 Fastest-rising (emerging) zones — catch these before they peak")
     em = emerging.head(12)[["top_location", "top_station", "recent_daily", "pred_daily", "momentum_pct"]].rename(
         columns={"top_location": "location", "recent_daily": "now/day", "pred_daily": "forecast/day",
@@ -267,6 +292,7 @@ with tabs[3]:
         line = [{"lat": float(r.lat), "lng": float(r.lon)} for _, r in route.iterrows()]
         mappls_map(mk, route=line, height=480, zoom=11,
                    center=(route.lat.mean(), route.lon.mean()), dom="ptmap")
+        legend([("Patrol stop (numbered in visit order)", "#185fa5")])
     with right:
         st.dataframe(route[["stop", "pics", "top_location", "leg_km", "cum_km"]].rename(
             columns={"top_location": "location"}), hide_index=True, use_container_width=True, height=480)
