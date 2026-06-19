@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0F4C75"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- Hexagon (H3 zone) -->
+  <polygon points="32,10 54,22 54,42 32,54 10,42 10,22" stroke="rgba(255,255,255,0.55)" stroke-width="3" fill="rgba(15,118,110,0.40)"/>
+  <!-- Route path -->
+  <polyline points="20,30 32,24 44,36 32,42" stroke="#5EEAD4" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Hotspot pin -->
+  <circle cx="32" cy="24" r="5.6" fill="#F87171"/>
+  <circle cx="32" cy="24" r="2.2" fill="#ffffff"/>
+</svg>

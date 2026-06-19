@@ -1,104 +1,585 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>BTP Parking Patrol — Officer App Mockup</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BTP Parking Patrol — Officer App</title>
 <style>
-  :root { --bg:#0e1117; --surf:#171b24; --surf2:#1f2530; --line:#2a313d;
-          --txt:#e8eaed; --mut:#9aa3b2; --red:#e24b4a; --amber:#ef9f27; --green:#5dcaa5; --accent:#7f77dd; }
-  * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,Segoe UI,Roboto,sans-serif; }
-  body { background:#06070a; display:flex; justify-content:center; padding:24px; min-height:100vh; }
-  .phone { width:390px; background:var(--bg); border-radius:38px; border:10px solid #000;
-           overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.5); }
-  .statusbar { display:flex; justify-content:space-between; padding:10px 22px 6px; font-size:13px; color:var(--txt); }
-  .header { padding:8px 18px 14px; border-bottom:1px solid var(--line); }
-  .brand { display:flex; align-items:center; gap:9px; }
-  .brand .logo { width:30px; height:30px; border-radius:8px; background:var(--accent); display:flex;
-                 align-items:center; justify-content:center; color:#fff; font-size:18px; }
-  .brand h1 { font-size:16px; color:var(--txt); font-weight:600; }
-  .brand p { font-size:12px; color:var(--mut); }
-  .officer { margin-left:auto; text-align:right; }
-  .officer .nm { font-size:12px; color:var(--txt); } .officer .id { font-size:11px; color:var(--mut); }
-  .body { padding:14px 16px 0; }
-  .summary { display:flex; gap:8px; margin-bottom:14px; }
-  .stat { flex:1; background:var(--surf); border-radius:12px; padding:10px; text-align:center; }
-  .stat .v { font-size:18px; color:var(--txt); font-weight:600; } .stat .l { font-size:10px; color:var(--mut); margin-top:2px; }
-  .alert { display:flex; gap:9px; align-items:center; background:rgba(239,159,39,.12);
-           border:1px solid rgba(239,159,39,.35); border-radius:10px; padding:9px 11px; margin-bottom:14px; }
-  .alert i { color:var(--amber); font-size:18px; } .alert span { font-size:12px; color:var(--txt); line-height:1.4; }
-  .sec { font-size:12px; color:var(--mut); text-transform:uppercase; letter-spacing:.5px; margin:4px 2px 8px; }
-  .target { background:var(--surf); border:1px solid var(--line); border-radius:16px; padding:14px; margin-bottom:14px; }
-  .target .top { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-  .pill { font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; }
-  .pill.red { background:rgba(226,75,74,.18); color:#ff8a89; }
-  .pill.stop { background:var(--surf2); color:var(--mut); }
-  .target h2 { font-size:18px; color:var(--txt); font-weight:600; margin-bottom:2px; }
-  .target .addr { font-size:13px; color:var(--mut); margin-bottom:12px; }
-  .meta { display:flex; gap:8px; margin-bottom:12px; }
-  .meta div { flex:1; background:var(--surf2); border-radius:9px; padding:8px; }
-  .meta .l { font-size:10px; color:var(--mut); } .meta .v { font-size:13px; color:var(--txt); margin-top:2px; }
-  .btns { display:flex; gap:8px; }
-  .btn { flex:1; border:none; border-radius:11px; padding:12px; font-size:13px; font-weight:600;
-         display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; }
-  .btn.go { background:var(--accent); color:#fff; } .btn.done { background:var(--surf2); color:var(--txt); }
-  .stoplist { padding-bottom:8px; }
-  .row { display:flex; align-items:center; gap:11px; padding:10px 4px; border-bottom:1px solid var(--line); }
-  .row .num { width:24px; height:24px; border-radius:7px; background:var(--surf2); color:var(--mut);
-              display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; }
-  .row .info { flex:1; } .row .info .n { font-size:13px; color:var(--txt); } .row .info .s { font-size:11px; color:var(--mut); }
-  .row .pics { font-size:12px; font-weight:600; color:var(--red); }
-  .nav { display:flex; border-top:1px solid var(--line); margin-top:8px; }
-  .nav div { flex:1; text-align:center; padding:11px 0 14px; font-size:10px; color:var(--mut); }
-  .nav div.on { color:var(--accent); } .nav i { font-size:20px; display:block; margin-bottom:2px; }
+:root{
+  --bg:#0e1117;--surf:#171b24;--surf2:#1f2530;--line:#2a313d;
+  --txt:#e8eaed;--mut:#9aa3b2;--red:#e24b4a;--amber:#ef9f27;
+  --green:#5dcaa5;--accent:#7f77dd;--blue:#4a90d9;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif}
+body{background:#06070a;display:flex;justify-content:center;align-items:flex-start;padding:24px;min-height:100vh}
+
+/* ── PHONE SHELL ── */
+.phone{
+  width:390px;
+  height:780px; /* fixed so map has room */
+  background:var(--bg);
+  border-radius:44px;
+  border:10px solid #1a1a1a;
+  box-shadow:0 24px 80px rgba(0,0,0,.75),inset 0 0 0 1px rgba(255,255,255,0.05);
+  display:flex;flex-direction:column;
+  overflow:hidden;position:relative;
+}
+
+/* ── STATUS BAR ── */
+.statusbar{
+  height:34px;flex-shrink:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 22px;font-size:12px;color:var(--txt);font-weight:600;
+}
+
+/* ── HEADER ── */
+.header{
+  flex-shrink:0;
+  padding:6px 18px 12px;
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:9px}
+.brand .logo{
+  width:32px;height:32px;border-radius:9px;
+  background:linear-gradient(135deg,var(--accent),#5b54c2);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;flex-shrink:0;
+  box-shadow:0 3px 12px rgba(127,119,221,.4);
+}
+.brand h1{font-size:15px;color:var(--txt);font-weight:700}
+.brand p{font-size:10.5px;color:var(--mut)}
+.officer{margin-left:auto;text-align:right;flex-shrink:0}
+.officer .nm{font-size:12px;color:var(--txt);font-weight:600}
+.officer .id{font-size:10px;color:var(--mut)}
+
+/* ── VIEWS ── */
+.views-wrap{flex:1;position:relative;overflow:hidden}
+.view{
+  position:absolute;inset:0;
+  overflow-y:auto;overflow-x:hidden;
+  display:none;
+}
+.view.active{display:block}
+#view-map.active{overflow:hidden} /* map must not scroll */
+
+/* ── PATROL VIEW ── */
+.patrol-body{padding:12px 14px 0}
+.summary{display:flex;gap:7px;margin-bottom:10px}
+.stat{flex:1;background:var(--surf);border-radius:11px;padding:9px 6px;text-align:center;border:1px solid var(--line)}
+.stat .v{font-size:16px;color:var(--txt);font-weight:700}
+.stat .l{font-size:9px;color:var(--mut);margin-top:1px;text-transform:uppercase;letter-spacing:.04em}
+.forecast-alert{display:flex;gap:8px;align-items:center;background:rgba(239,159,39,.10);border:1px solid rgba(239,159,39,.28);border-radius:10px;padding:8px 10px;margin-bottom:10px}
+.forecast-alert .icon{font-size:14px;flex-shrink:0}
+.forecast-alert span{font-size:11px;color:var(--txt);line-height:1.4}
+.sec-label{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin:2px 2px 7px;font-weight:600}
+.target{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.target .top{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
+.pill.red{background:rgba(226,75,74,.18);color:#ff8a89}
+.pill.amber{background:rgba(239,159,39,.18);color:#f5bf6a}
+.pill.stop{background:var(--surf2);color:var(--mut)}
+.pill.done{background:rgba(93,202,165,.18);color:#5dcaa5}
+.target h2{font-size:18px;color:var(--txt);font-weight:700;margin-bottom:2px}
+.target .addr{font-size:12px;color:var(--mut);margin-bottom:10px;line-height:1.4}
+.meta-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.meta-cell{background:var(--surf2);border-radius:8px;padding:7px 9px}
+.meta-cell .ml{font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.meta-cell .mv{font-size:12.5px;color:var(--txt);font-weight:600}
+.btns{display:flex;gap:7px}
+.btn{flex:1;border:none;border-radius:11px;padding:12px;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .18s}
+.btn:active{transform:scale(0.95)}
+.btn.go{background:linear-gradient(135deg,var(--accent),#6a62d0);color:#fff;box-shadow:0 4px 14px rgba(127,119,221,.35)}
+.btn.done-btn{background:linear-gradient(135deg,var(--green),#40b48e);color:#fff;box-shadow:0 4px 12px rgba(93,202,165,.3)}
+.stoplist{padding-bottom:6px}
+.stop-row{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;border-radius:7px}
+.stop-row:hover{background:var(--surf2)}
+.stop-row.cleared{opacity:.42}
+.stop-num{width:25px;height:25px;border-radius:7px;background:var(--surf2);color:var(--mut);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.stop-num.done-num{background:rgba(93,202,165,.2);color:var(--green)}
+.stop-info{flex:1;min-width:0}
+.stop-info .sn{font-size:12.5px;color:var(--txt);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stop-info .ss{font-size:10px;color:var(--mut);margin-top:1px}
+.stop-pics{font-size:11px;font-weight:700;flex-shrink:0}
+
+/* ── MAP VIEW ── */
+#patrol-map{width:100%;height:100%}
+.map-overlay{
+  position:absolute;top:12px;left:12px;right:12px;
+  background:rgba(14,17,23,0.88);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--line);border-radius:12px;
+  padding:9px 12px;pointer-events:none;
+}
+.map-overlay .mo-title{font-size:12.5px;font-weight:700;color:var(--txt);margin-bottom:3px}
+.map-overlay .mo-sub{font-size:10.5px;color:var(--mut)}
+.map-legend{display:flex;gap:12px;margin-top:5px}
+.ml-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mut)}
+.ml-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── REPORT VIEW ── */
+.report-body{padding:12px 14px}
+.rform-group{margin-bottom:10px}
+.rform-group label{display:block;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:5px}
+.rform-group input,.rform-group select,.rform-group textarea{
+  width:100%;background:var(--surf);border:1px solid var(--line);border-radius:9px;
+  padding:9px 11px;color:var(--txt);font-size:13px;outline:none;transition:border-color .15s;
+}
+.rform-group input:focus,.rform-group select:focus,.rform-group textarea:focus{border-color:var(--accent)}
+.rform-group textarea{height:62px;resize:none;line-height:1.5}
+.rform-group select option{background:var(--surf2)}
+.photo-btn{
+  width:100%;background:var(--surf);border:1.5px dashed var(--line);
+  border-radius:9px;padding:16px;display:flex;flex-direction:column;align-items:center;
+  gap:4px;cursor:pointer;transition:border-color .15s;color:var(--mut);font-size:13px;
+}
+.photo-btn:hover,.photo-btn:focus{border-color:var(--accent);outline:none}
+.photo-btn .pb-icon{font-size:22px}
+.submit-btn{
+  width:100%;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:700;
+  background:linear-gradient(135deg,var(--accent),#6a62d0);color:#fff;cursor:pointer;
+  box-shadow:0 4px 14px rgba(127,119,221,.3);transition:all .18s;margin-top:2px;
+}
+.submit-btn:active{transform:scale(0.97)}
+.report-success{display:none;text-align:center;padding:28px 16px}
+.report-success .rs-icon{font-size:44px;margin-bottom:10px}
+.report-success h3{color:var(--green);font-size:16px;font-weight:700;margin-bottom:6px}
+.report-success p{color:var(--mut);font-size:12px;line-height:1.5}
+
+/* ── STATS VIEW ── */
+.stats-body{padding:12px 14px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.stats-card{background:var(--surf);border:1px solid var(--line);border-radius:13px;padding:12px;text-align:center}
+.stats-card .sv{font-size:26px;font-weight:800;margin-bottom:3px}
+.stats-card .sl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-bottom:6px}
+.prog-track{height:7px;background:var(--surf2);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:4px;transition:width .6s ease}
+.timeline{border-left:2px solid var(--line);padding-left:13px;margin-top:10px}
+.tl-item{position:relative;margin-bottom:12px}
+.tl-item::before{content:'';position:absolute;left:-18px;top:4px;width:7px;height:7px;border-radius:50%;background:var(--line)}
+.tl-item.done-tl::before{background:var(--green)}
+.tl-item.cur-tl::before{background:var(--accent);box-shadow:0 0 7px var(--accent)}
+.tl-name{font-size:12px;color:var(--txt);font-weight:500}
+.tl-meta{font-size:10px;color:var(--mut);margin-top:1px}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  flex-shrink:0;
+  display:flex;border-top:1px solid var(--line);
+  background:rgba(23,27,36,0.95);
+  padding-bottom:4px;
+}
+.nav-item{
+  flex:1;text-align:center;padding:10px 0 8px;
+  font-size:10px;color:var(--mut);cursor:pointer;
+  transition:color .15s;border:none;background:none;
+}
+.nav-item .ni{font-size:19px;display:block;margin-bottom:2px}
+.nav-item.active{color:var(--accent)}
+.nav-item.active .ni{filter:drop-shadow(0 0 5px rgba(127,119,221,.6))}
+
+/* ── TOAST ── */
+.toast{
+  position:absolute;bottom:72px;left:50%;
+  transform:translateX(-50%) translateY(8px);
+  background:rgba(31,37,48,.96);border:1px solid var(--line);
+  border-radius:10px;padding:9px 18px;font-size:12px;color:var(--txt);
+  white-space:nowrap;opacity:0;transition:all .28s;pointer-events:none;z-index:99;
+  backdrop-filter:blur(8px);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-  <div class="phone">
-    <div class="statusbar"><span>9:24</span><span><i class="ti ti-signal-4g"></i> &nbsp;<i class="ti ti-wifi"></i> &nbsp;<i class="ti ti-battery-3"></i></span></div>
-    <div class="header">
-      <div class="brand">
-        <div class="logo"><i class="ti ti-shield-check"></i></div>
-        <div><h1>BTP Parking Patrol</h1><p>Shift plan · 17 Jun</p></div>
-        <div class="officer"><div class="nm">PC Ramesh K.</div><div class="id">Upparpet div.</div></div>
+<div class="phone" id="phone">
+
+  <!-- Status Bar -->
+  <div class="statusbar">
+    <span id="clock">9:24</span>
+    <span style="display:flex;gap:8px;align-items:center">
+      <span style="font-size:10px">4G</span>
+      <span style="font-size:10px;letter-spacing:1px">●●●</span>
+      <span style="font-size:13px">🔋</span>
+    </span>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">
+      <div class="logo">🛡️</div>
+      <div>
+        <h1>BTP Parking Patrol</h1>
+        <p id="shift-date">Shift plan · Loading…</p>
       </div>
-    </div>
-    <div class="body">
-      <div class="summary">
-        <div class="stat"><div class="v">12</div><div class="l">STOPS</div></div>
-        <div class="stat"><div class="v">34 km</div><div class="l">ROUTE</div></div>
-        <div class="stat"><div class="v">~5 h</div><div class="l">SHIFT</div></div>
-        <div class="stat"><div class="v">59%</div><div class="l">SHORTER</div></div>
-      </div>
-      <div class="alert"><i class="ti ti-trending-up"></i><span>Forecast: Kempe Gowda Circle predicted <b>+566 violations</b> next 7 days — highest in city.</span></div>
-      <div class="sec">Current target</div>
-      <div class="target">
-        <div class="top"><span class="pill stop">STOP 1 / 12</span><span class="pill red">PICS 100 · critical</span></div>
-        <h2>5th Main Road</h2>
-        <div class="addr">Kempe Gowda Circle, Upparpet · tertiary road</div>
-        <div class="meta">
-          <div><div class="l">DEPLOY WINDOW</div><div class="v">08:00–11:00</div></div>
-          <div><div class="l">TARGET</div><div class="v">No parking</div></div>
-          <div><div class="l">DISTANCE</div><div class="v">0.0 km</div></div>
-        </div>
-        <div class="btns"><button class="btn go"><i class="ti ti-navigation"></i> Navigate</button>
-          <button class="btn done"><i class="ti ti-check"></i> Mark cleared</button></div>
-      </div>
-      <div class="sec">Up next</div>
-      <div class="stoplist">
-        <div class="row"><div class="num">2</div><div class="info"><div class="n">Sri Kanakadasa Circle</div><div class="s">Upparpet · 0.35 km · wrong parking</div></div><div class="pics">90</div></div>
-        <div class="row"><div class="num">3</div><div class="info"><div class="n">Kempegowda Extension</div><div class="s">Upparpet · 0.71 km · no parking</div></div><div class="pics">99</div></div>
-        <div class="row"><div class="num">4</div><div class="info"><div class="n">K.R. Market, Mysore Rd</div><div class="s">City Market · 1.8 km · wrong parking</div></div><div class="pics">91</div></div>
-        <div class="row"><div class="num">5</div><div class="info"><div class="n">Chord Road, Manuvana</div><div class="s">Vijayanagara · 5.4 km · wrong parking</div></div><div class="pics">88</div></div>
-      </div>
-      <div class="nav">
-        <div class="on"><i class="ti ti-route"></i>Patrol</div>
-        <div><i class="ti ti-map-2"></i>Map</div>
-        <div><i class="ti ti-camera"></i>Report</div>
-        <div><i class="ti ti-chart-bar"></i>Stats</div>
+      <div class="officer">
+        <div class="nm">PC Ramesh K.</div>
+        <div class="id">Upparpet div.</div>
       </div>
     </div>
   </div>
+
+  <!-- Views -->
+  <div class="views-wrap">
+
+    <!-- PATROL VIEW -->
+    <div class="view active" id="view-patrol">
+      <div class="patrol-body">
+        <div class="summary">
+          <div class="stat"><div class="v" id="stat-stops">12</div><div class="l">Stops</div></div>
+          <div class="stat"><div class="v" id="stat-done">0</div><div class="l">Done</div></div>
+          <div class="stat"><div class="v" id="stat-km">47 km</div><div class="l">Route</div></div>
+          <div class="stat"><div class="v" id="stat-pct">0%</div><div class="l">Progress</div></div>
+        </div>
+        <div class="forecast-alert">
+          <div class="icon">📈</div>
+          <span>Forecast: <b>Kempe Gowda Circle</b> predicted +566 violations next 7 days — highest in city.</span>
+        </div>
+        <div class="sec-label">Current target</div>
+        <div class="target" id="target-card">
+          <div class="top">
+            <span class="pill stop" id="stop-badge">STOP 1 / 12</span>
+            <span class="pill red" id="pics-badge">PICS 100 · Critical</span>
+          </div>
+          <h2 id="stop-name">5th Main Road</h2>
+          <div class="addr" id="stop-addr">Kempe Gowda Circle, Upparpet · tertiary road</div>
+          <div class="meta-row">
+            <div class="meta-cell"><div class="ml">Deploy window</div><div class="mv" id="stop-window">08:00–11:00</div></div>
+            <div class="meta-cell"><div class="ml">Target</div><div class="mv" id="stop-target">No parking</div></div>
+            <div class="meta-cell"><div class="ml">Leg distance</div><div class="mv" id="stop-dist">0.0 km</div></div>
+            <div class="meta-cell"><div class="ml">Cum. km</div><div class="mv" id="stop-cum">0.0 km</div></div>
+          </div>
+          <div class="btns">
+            <button class="btn go" onclick="navigate()">🗺 Navigate</button>
+            <button class="btn done-btn" id="clear-btn" onclick="markCleared()">✓ Mark cleared</button>
+          </div>
+        </div>
+        <div class="sec-label">All stops</div>
+        <div class="stoplist" id="stoplist"></div>
+      </div>
+    </div>
+
+    <!-- MAP VIEW -->
+    <div class="view" id="view-map" style="position:absolute;inset:0;overflow:hidden">
+      <div id="patrol-map" style="width:100%;height:100%"></div>
+      <div class="map-overlay" id="map-overlay">
+        <div class="mo-title">📍 Today's Patrol Route</div>
+        <div class="mo-sub" id="map-info">12 stops · 47 km · Upparpet → Silk Board</div>
+        <div class="map-legend">
+          <div class="ml-item"><div class="ml-dot" style="background:#e24b4a"></div>Critical</div>
+          <div class="ml-item"><div class="ml-dot" style="background:#ef9f27"></div>High</div>
+          <div class="ml-item"><div class="ml-dot" style="background:#5dcaa5"></div>Cleared</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORT VIEW -->
+    <div class="view" id="view-report">
+      <div class="report-body">
+        <div id="report-form-wrap">
+          <div class="sec-label" style="margin-top:2px">Log a violation</div>
+          <div class="rform-group">
+            <label>Location</label>
+            <input type="text" id="rp-location" placeholder="Street / landmark…">
+          </div>
+          <div class="rform-group">
+            <label>Violation type</label>
+            <select id="rp-vtype">
+              <option>No Parking Zone</option>
+              <option>Wrong Parking</option>
+              <option>Footpath Parking</option>
+              <option>Junction Obstruction</option>
+              <option>Bus Stop Obstruction</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="rform-group">
+            <label>Vehicle number</label>
+            <input type="text" id="rp-vnum" placeholder="KA 01 AB 1234" style="text-transform:uppercase">
+          </div>
+          <div class="rform-group">
+            <label>Photo evidence</label>
+            <button class="photo-btn" id="photo-btn" onclick="fakePhoto()">
+              <span class="pb-icon">📷</span>
+              <span>Tap to capture photo</span>
+            </button>
+          </div>
+          <div class="rform-group">
+            <label>Notes (optional)</label>
+            <textarea id="rp-notes" placeholder="Additional observations…"></textarea>
+          </div>
+          <button class="submit-btn" onclick="submitReport()">Submit Report →</button>
+        </div>
+        <div class="report-success" id="report-success">
+          <div class="rs-icon">✅</div>
+          <h3>Report Submitted</h3>
+          <p id="report-confirm-text">Violation logged and sent to control room.</p>
+          <button class="submit-btn" style="margin-top:18px" onclick="resetReport()">Log Another →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS VIEW -->
+    <div class="view" id="view-stats">
+      <div class="stats-body">
+        <div class="sec-label" style="margin-top:2px">Shift summary</div>
+        <div class="stats-grid">
+          <div class="stats-card"><div class="sv" id="st-done" style="color:var(--green)">0</div><div class="sl">Cleared</div></div>
+          <div class="stats-card"><div class="sv" id="st-rem" style="color:var(--amber)">12</div><div class="sl">Remaining</div></div>
+          <div class="stats-card"><div class="sv" id="st-km" style="color:var(--blue)">0</div><div class="sl">km done</div></div>
+          <div class="stats-card"><div class="sv" id="st-rpt" style="color:var(--accent)">0</div><div class="sl">Reports</div></div>
+        </div>
+        <div class="prog-label"><span>Shift progress</span><span id="st-pct-label">0%</span></div>
+        <div class="prog-track"><div class="prog-fill" id="st-progress" style="width:0%"></div></div>
+        <div class="sec-label" style="margin-top:12px">Stop timeline</div>
+        <div class="timeline" id="st-timeline"></div>
+      </div>
+    </div>
+
+  </div><!-- views-wrap -->
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="switchView('patrol',this)"><span class="ni">🚔</span>Patrol</button>
+    <button class="nav-item" onclick="switchView('map',this)"><span class="ni">🗺️</span>Map</button>
+    <button class="nav-item" onclick="switchView('report',this)"><span class="ni">📷</span>Report</button>
+    <button class="nav-item" onclick="switchView('stats',this)"><span class="ni">📊</span>Stats</button>
+  </div>
+</div>
+
+<!-- Mappls SDK — loaded async; initMap() polls until mappls.Map is ready -->
+<script src="https://apis.mappls.com/advancedmaps/api/7748ecab0e753c215194a09e01debb77/map_sdk?v=3.0&layer=vector" async></script>
+
+<script>
+/* ── STOPS DATA ── */
+var stops = [
+  {num:1,pics:100,name:"5th Main Road",addr:"Kempe Gowda Circle, Upparpet",window:"08:00–11:00",target:"No parking",dist:0.0,cum:0.0,lat:12.9767,lng:77.5713},
+  {num:2,pics:90,name:"Sri Kanakadasa Circle",addr:"Upparpet · secondary",window:"09:00–12:00",target:"Wrong parking",dist:0.35,cum:0.35,lat:12.9769,lng:77.5689},
+  {num:3,pics:99,name:"Kempegowda Extension",addr:"Upparpet · primary",window:"08:00–11:00",target:"No parking",dist:0.71,cum:1.06,lat:12.9748,lng:77.5706},
+  {num:4,pics:91,name:"K.R. Market, Mysore Rd",addr:"City Market · secondary",window:"10:00–13:00",target:"Wrong parking",dist:1.80,cum:2.86,lat:12.9634,lng:77.5700},
+  {num:5,pics:88,name:"Chord Road, Manuvana",addr:"Vijayanagara · secondary",window:"11:00–14:00",target:"Wrong parking",dist:5.4,cum:8.26,lat:12.9766,lng:77.5310},
+  {num:6,pics:85,name:"Banashankari Main Rd",addr:"Banashankari · secondary",window:"08:00–11:00",target:"No parking",dist:3.2,cum:11.46,lat:12.9244,lng:77.5609},
+  {num:7,pics:82,name:"Indiranagar 100ft Rd",addr:"Indiranagar · primary",window:"09:00–12:00",target:"Footpath parking",dist:6.1,cum:17.56,lat:12.9784,lng:77.6408},
+  {num:8,pics:79,name:"Koramangala 5th Block",addr:"Koramangala · secondary",window:"10:00–13:00",target:"Wrong parking",dist:4.8,cum:22.36,lat:12.9352,lng:77.6245},
+  {num:9,pics:76,name:"MG Road Junction",addr:"Central · primary",window:"08:00–11:00",target:"No parking",dist:5.2,cum:27.56,lat:12.9754,lng:77.6074},
+  {num:10,pics:73,name:"Rajajinagar Main Rd",addr:"Rajajinagar · secondary",window:"11:00–14:00",target:"Wrong parking",dist:4.1,cum:31.66,lat:12.9867,lng:77.5531},
+  {num:11,pics:70,name:"Hebbal Flyover",addr:"Hebbal · tertiary",window:"08:00–11:00",target:"No parking",dist:6.8,cum:38.46,lat:13.0352,lng:77.5971},
+  {num:12,pics:67,name:"Silk Board Junction",addr:"Electronic City · secondary",window:"07:00–10:00",target:"Junction obstruction",dist:8.7,cum:47.16,lat:12.9172,lng:77.6228},
+];
+
+var currentIdx = 0;
+var cleared = [];
+var reportCount = 0;
+var patrolMap = null;
+var mapMarkers = [];
+var mapInited = false;
+
+/* ── INIT ── */
+(function init(){
+  var d = new Date();
+  var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var mons=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('shift-date').textContent='Shift plan · '+days[d.getDay()]+' '+d.getDate()+' '+mons[d.getMonth()];
+  updateClock();
+  setInterval(updateClock,30000);
+  renderStop();
+  renderStopList();
+})();
+
+function updateClock(){
+  var n=new Date(),h=n.getHours(),m=n.getMinutes();
+  document.getElementById('clock').textContent=h+':'+(m<10?'0':'')+m;
+}
+
+/* ── RENDER CURRENT STOP ── */
+function renderStop(){
+  if(currentIdx>=stops.length){
+    document.getElementById('target-card').innerHTML='<div style="text-align:center;padding:24px 0"><div style="font-size:38px;margin-bottom:10px">🎉</div><h2 style="color:var(--green);font-size:17px">All stops cleared!</h2><p style="color:var(--mut);font-size:12px;margin-top:7px">Great work today, PC Ramesh. Shift complete.</p></div>';
+    updateStats(); return;
+  }
+  var s=stops[currentIdx];
+  document.getElementById('stop-badge').textContent='STOP '+s.num+' / '+stops.length;
+  var pb=document.getElementById('pics-badge');
+  pb.textContent='PICS '+s.pics+(s.pics>=75?' · Critical':s.pics>=50?' · High':' · Moderate');
+  pb.className='pill '+(s.pics>=75?'red':s.pics>=50?'amber':'done');
+  document.getElementById('stop-name').textContent=s.name;
+  document.getElementById('stop-addr').textContent=s.addr;
+  document.getElementById('stop-window').textContent=s.window;
+  document.getElementById('stop-target').textContent=s.target;
+  document.getElementById('stop-dist').textContent=s.dist.toFixed(2)+' km';
+  document.getElementById('stop-cum').textContent=s.cum.toFixed(2)+' km';
+  updateStats();
+}
+
+/* ── STOP LIST ── */
+function renderStopList(){
+  var list=document.getElementById('stoplist');
+  list.innerHTML='';
+  stops.forEach(function(s,i){
+    var isDone=cleared.indexOf(i)>=0;
+    var isCur=i===currentIdx;
+    var col=s.pics>=75?'#e24b4a':s.pics>=50?'#ef9f27':'#5dcaa5';
+    var row=document.createElement('div');
+    row.className='stop-row'+(isDone?' cleared':'');
+    row.onclick=function(){jumpToStop(i);};
+    row.innerHTML='<div class="stop-num'+(isDone?' done-num':'')+'">'+(isDone?'✓':s.num)+'</div>'
+      +'<div class="stop-info"><div class="sn">'+(isCur?'▶ ':'')+s.name+'</div>'
+      +'<div class="ss">'+s.addr.split('·')[0].trim()+' · '+s.dist.toFixed(1)+' km</div></div>'
+      +'<div class="stop-pics" style="color:'+col+'">'+s.pics+'</div>';
+    list.appendChild(row);
+  });
+}
+
+/* ── ACTIONS ── */
+function markCleared(){
+  if(currentIdx>=stops.length) return;
+  var s=stops[currentIdx];
+  cleared.push(currentIdx);
+  currentIdx++;
+  showToast('✓ Stop '+s.num+' cleared — '+s.name);
+  renderStop(); renderStopList(); renderTimeline();
+  refreshMapMarkers();
+}
+
+function jumpToStop(i){
+  if(cleared.indexOf(i)>=0){showToast('Already cleared');return;}
+  currentIdx=i; renderStop(); renderStopList();
+  showToast('Jumped to stop '+(i+1));
+}
+
+function navigate(){
+  if(currentIdx>=stops.length) return;
+  var s=stops[currentIdx];
+  window.open('https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng+'&travelmode=driving','_blank');
+  showToast('Opening navigation…');
+}
+
+/* ── STATS ── */
+function updateStats(){
+  var done=cleared.length, rem=stops.length-done, pct=Math.round(done/stops.length*100);
+  var kmDone=done>0?stops[Math.min(done-1,stops.length-1)].cum.toFixed(1):'0';
+  document.getElementById('stat-done').textContent=done;
+  document.getElementById('stat-pct').textContent=pct+'%';
+  document.getElementById('st-done').textContent=done;
+  document.getElementById('st-rem').textContent=rem;
+  document.getElementById('st-km').textContent=kmDone;
+  document.getElementById('st-rpt').textContent=reportCount;
+  document.getElementById('st-pct-label').textContent=pct+'%';
+  document.getElementById('st-progress').style.width=pct+'%';
+}
+
+/* ── TIMELINE ── */
+function renderTimeline(){
+  var tl=document.getElementById('st-timeline');
+  tl.innerHTML='';
+  stops.forEach(function(s,i){
+    var isDone=cleared.indexOf(i)>=0, isCur=i===currentIdx;
+    var div=document.createElement('div');
+    div.className='tl-item'+(isDone?' done-tl':isCur?' cur-tl':'');
+    div.innerHTML='<div class="tl-name">'+(isDone?'<s>':'')+s.name+(isDone?'</s>':'')
+      +(isCur?' <span style="color:var(--accent);font-size:9.5px">← now</span>':'')+'</div>'
+      +'<div class="tl-meta">PICS '+s.pics+' · '+s.target+'</div>';
+    tl.appendChild(div);
+  });
+}
+
+/* ── MAPPLS MAP ── */
+function initMap(){
+  if(mapInited) return;
+  mapInited=true;
+
+  function tryCreate(){
+    if(typeof mappls==='undefined'||typeof mappls.Map!=='function'){
+      setTimeout(tryCreate,200); return;
+    }
+    patrolMap=new mappls.Map('patrol-map',{
+      center:{lat:12.97,lng:77.59},zoom:11,
+    });
+    var drawn=false;
+    function drawRoute(){
+      if(drawn) return; drawn=true;
+      // Draw polyline
+      var path=stops.map(function(s){return{lat:s.lat,lng:s.lng};});
+      try{
+        new mappls.Polyline({map:patrolMap,path:path,
+          strokeColor:'#7f77dd',strokeWidth:3,strokeOpacity:0.7});
+      }catch(e){}
+      // Add numbered markers
+      stops.forEach(function(s,i){
+        var col=s.pics>=75?'#e24b4a':s.pics>=50?'#ef9f27':'#5dcaa5';
+        var html='<div style="width:22px;height:22px;background:'+col
+          +';border:2px solid #fff;border-radius:50%;display:flex;align-items:center;'
+          +'justify-content:center;color:#fff;font-size:9px;font-weight:800;'
+          +'box-shadow:0 2px 8px rgba(0,0,0,.5);cursor:pointer" '
+          +'title="Stop '+s.num+': '+s.name+'">'+s.num+'</div>';
+        var m=new mappls.Marker({map:patrolMap,position:{lat:s.lat,lng:s.lng},html:html});
+        mapMarkers.push({marker:m,idx:i});
+      });
+    }
+    try{patrolMap.on('load',drawRoute);}catch(e){}
+    try{patrolMap.addListener('load',drawRoute);}catch(e){}
+    setTimeout(drawRoute,2200);
+  }
+  tryCreate();
+}
+
+function refreshMapMarkers(){
+  // Update marker colors for cleared stops — recreate map to reflect state
+  // Simple approach: just update the info overlay text
+  var done=cleared.length;
+  document.getElementById('map-info').textContent=
+    (stops.length-done)+' stops remaining · '+stops[stops.length-1].cum.toFixed(0)+' km total';
+}
+
+/* ── VIEW SWITCHING ── */
+function switchView(name,btn){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('view-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='map') initMap();
+  if(name==='stats'){updateStats();renderTimeline();}
+}
+
+/* ── PHOTO ── */
+function fakePhoto(){
+  var btn=document.getElementById('photo-btn');
+  btn.innerHTML='<span class="pb-icon">📸</span><span style="color:var(--green)">Photo captured ✓</span>';
+  btn.style.borderColor='var(--green)';
+}
+
+/* ── REPORT ── */
+function submitReport(){
+  var loc=document.getElementById('rp-location').value.trim();
+  var vnum=document.getElementById('rp-vnum').value.trim();
+  if(!loc||!vnum){showToast('Fill location & vehicle number');return;}
+  reportCount++;
+  updateStats();
+  var vtype=document.getElementById('rp-vtype').value;
+  document.getElementById('report-confirm-text').textContent=
+    vtype+' · '+vnum.toUpperCase()+' at '+loc+'. Ref #BTP'+Date.now().toString().slice(-5);
+  document.getElementById('report-form-wrap').style.display='none';
+  document.getElementById('report-success').style.display='block';
+}
+function resetReport(){
+  document.getElementById('rp-location').value='';
+  document.getElementById('rp-vnum').value='';
+  document.getElementById('rp-notes').value='';
+  document.getElementById('report-form-wrap').style.display='block';
+  document.getElementById('report-success').style.display='none';
+  document.getElementById('photo-btn').innerHTML='<span class="pb-icon">📷</span><span>Tap to capture photo</span>';
+  document.getElementById('photo-btn').style.borderColor='';
+}
+
+/* ── TOAST ── */
+var _tt;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(function(){t.classList.remove('show');},2400);
+}
+</script>
 </body>
 </html>

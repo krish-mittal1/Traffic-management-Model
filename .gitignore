@@ -26,3 +26,6 @@ metrics_full.json
 
 # internal planning notes (not for the public repo)
 DECK_OUTLINE.md
+.claude/
+.gemini/ 
+.agents/ 
