@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>BTP Parking Patrol — Officer App</title>
+<title>BTP Parking Patrol, Officer App</title>
 <style>
 :root{
   --bg:#0e1117;--surf:#171b24;--surf2:#1f2530;--line:#2a313d;
@@ -232,7 +232,7 @@ body{background:#06070a;display:flex;justify-content:center;align-items:flex-sta
         </div>
         <div class="forecast-alert">
           <div class="icon">📈</div>
-          <span>Forecast: <b>Kempe Gowda Circle</b> predicted +566 violations next 7 days — highest in city.</span>
+          <span>Forecast: <b>Kempe Gowda Circle</b> predicted +566 violations next 7 days, highest in city.</span>
         </div>
         <div class="sec-label">Current target</div>
         <div class="target" id="target-card">
@@ -243,7 +243,7 @@ body{background:#06070a;display:flex;justify-content:center;align-items:flex-sta
           <h2 id="stop-name">5th Main Road</h2>
           <div class="addr" id="stop-addr">Kempe Gowda Circle, Upparpet · tertiary road</div>
           <div class="meta-row">
-            <div class="meta-cell"><div class="ml">Deploy window</div><div class="mv" id="stop-window">08:00–11:00</div></div>
+            <div class="meta-cell"><div class="ml">Deploy window</div><div class="mv" id="stop-window">08:00-11:00</div></div>
             <div class="meta-cell"><div class="ml">Target</div><div class="mv" id="stop-target">No parking</div></div>
             <div class="meta-cell"><div class="ml">Leg distance</div><div class="mv" id="stop-dist">0.0 km</div></div>
             <div class="meta-cell"><div class="ml">Cum. km</div><div class="mv" id="stop-cum">0.0 km</div></div>
@@ -349,24 +349,24 @@ body{background:#06070a;display:flex;justify-content:center;align-items:flex-sta
   </div>
 </div>
 
-<!-- Mappls SDK — loaded async; initMap() polls until mappls.Map is ready -->
+<!-- Mappls SDK, loaded async; initMap() polls until mappls.Map is ready -->
 <script src="https://apis.mappls.com/advancedmaps/api/7748ecab0e753c215194a09e01debb77/map_sdk?v=3.0&layer=vector" async></script>
 
 <script>
 /* ── STOPS DATA ── */
 var stops = [
-  {num:1,pics:100,name:"5th Main Road",addr:"Kempe Gowda Circle, Upparpet",window:"08:00–11:00",target:"No parking",dist:0.0,cum:0.0,lat:12.9767,lng:77.5713},
-  {num:2,pics:90,name:"Sri Kanakadasa Circle",addr:"Upparpet · secondary",window:"09:00–12:00",target:"Wrong parking",dist:0.35,cum:0.35,lat:12.9769,lng:77.5689},
-  {num:3,pics:99,name:"Kempegowda Extension",addr:"Upparpet · primary",window:"08:00–11:00",target:"No parking",dist:0.71,cum:1.06,lat:12.9748,lng:77.5706},
-  {num:4,pics:91,name:"K.R. Market, Mysore Rd",addr:"City Market · secondary",window:"10:00–13:00",target:"Wrong parking",dist:1.80,cum:2.86,lat:12.9634,lng:77.5700},
-  {num:5,pics:88,name:"Chord Road, Manuvana",addr:"Vijayanagara · secondary",window:"11:00–14:00",target:"Wrong parking",dist:5.4,cum:8.26,lat:12.9766,lng:77.5310},
-  {num:6,pics:85,name:"Banashankari Main Rd",addr:"Banashankari · secondary",window:"08:00–11:00",target:"No parking",dist:3.2,cum:11.46,lat:12.9244,lng:77.5609},
-  {num:7,pics:82,name:"Indiranagar 100ft Rd",addr:"Indiranagar · primary",window:"09:00–12:00",target:"Footpath parking",dist:6.1,cum:17.56,lat:12.9784,lng:77.6408},
-  {num:8,pics:79,name:"Koramangala 5th Block",addr:"Koramangala · secondary",window:"10:00–13:00",target:"Wrong parking",dist:4.8,cum:22.36,lat:12.9352,lng:77.6245},
-  {num:9,pics:76,name:"MG Road Junction",addr:"Central · primary",window:"08:00–11:00",target:"No parking",dist:5.2,cum:27.56,lat:12.9754,lng:77.6074},
-  {num:10,pics:73,name:"Rajajinagar Main Rd",addr:"Rajajinagar · secondary",window:"11:00–14:00",target:"Wrong parking",dist:4.1,cum:31.66,lat:12.9867,lng:77.5531},
-  {num:11,pics:70,name:"Hebbal Flyover",addr:"Hebbal · tertiary",window:"08:00–11:00",target:"No parking",dist:6.8,cum:38.46,lat:13.0352,lng:77.5971},
-  {num:12,pics:67,name:"Silk Board Junction",addr:"Electronic City · secondary",window:"07:00–10:00",target:"Junction obstruction",dist:8.7,cum:47.16,lat:12.9172,lng:77.6228},
+  {num:1,pics:100,name:"5th Main Road",addr:"Kempe Gowda Circle, Upparpet",window:"08:00-11:00",target:"No parking",dist:0.0,cum:0.0,lat:12.9767,lng:77.5713},
+  {num:2,pics:90,name:"Sri Kanakadasa Circle",addr:"Upparpet · secondary",window:"09:00-12:00",target:"Wrong parking",dist:0.35,cum:0.35,lat:12.9769,lng:77.5689},
+  {num:3,pics:99,name:"Kempegowda Extension",addr:"Upparpet · primary",window:"08:00-11:00",target:"No parking",dist:0.71,cum:1.06,lat:12.9748,lng:77.5706},
+  {num:4,pics:91,name:"K.R. Market, Mysore Rd",addr:"City Market · secondary",window:"10:00-13:00",target:"Wrong parking",dist:1.80,cum:2.86,lat:12.9634,lng:77.5700},
+  {num:5,pics:88,name:"Chord Road, Manuvana",addr:"Vijayanagara · secondary",window:"11:00-14:00",target:"Wrong parking",dist:5.4,cum:8.26,lat:12.9766,lng:77.5310},
+  {num:6,pics:85,name:"Banashankari Main Rd",addr:"Banashankari · secondary",window:"08:00-11:00",target:"No parking",dist:3.2,cum:11.46,lat:12.9244,lng:77.5609},
+  {num:7,pics:82,name:"Indiranagar 100ft Rd",addr:"Indiranagar · primary",window:"09:00-12:00",target:"Footpath parking",dist:6.1,cum:17.56,lat:12.9784,lng:77.6408},
+  {num:8,pics:79,name:"Koramangala 5th Block",addr:"Koramangala · secondary",window:"10:00-13:00",target:"Wrong parking",dist:4.8,cum:22.36,lat:12.9352,lng:77.6245},
+  {num:9,pics:76,name:"MG Road Junction",addr:"Central · primary",window:"08:00-11:00",target:"No parking",dist:5.2,cum:27.56,lat:12.9754,lng:77.6074},
+  {num:10,pics:73,name:"Rajajinagar Main Rd",addr:"Rajajinagar · secondary",window:"11:00-14:00",target:"Wrong parking",dist:4.1,cum:31.66,lat:12.9867,lng:77.5531},
+  {num:11,pics:70,name:"Hebbal Flyover",addr:"Hebbal · tertiary",window:"08:00-11:00",target:"No parking",dist:6.8,cum:38.46,lat:13.0352,lng:77.5971},
+  {num:12,pics:67,name:"Silk Board Junction",addr:"Electronic City · secondary",window:"07:00-10:00",target:"Junction obstruction",dist:8.7,cum:47.16,lat:12.9172,lng:77.6228},
 ];
 
 var currentIdx = 0;
@@ -438,7 +438,7 @@ function markCleared(){
   var s=stops[currentIdx];
   cleared.push(currentIdx);
   currentIdx++;
-  showToast('✓ Stop '+s.num+' cleared — '+s.name);
+  showToast('✓ Stop '+s.num+' cleared, '+s.name);
   renderStop(); renderStopList(); renderTimeline();
   refreshMapMarkers();
 }
@@ -526,7 +526,7 @@ function initMap(){
 }
 
 function refreshMapMarkers(){
-  // Update marker colors for cleared stops — recreate map to reflect state
+  // Update marker colors for cleared stops, recreate map to reflect state
   // Simple approach: just update the info overlay text
   var done=cleared.length;
   document.getElementById('map-info').textContent=
